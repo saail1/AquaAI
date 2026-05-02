@@ -4,11 +4,11 @@
     "slug": "aquaai",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/logo.png",
+    "icon": "./assets/icon.png",
     "scheme": "aquaai",
     "userInterfaceStyle": "dark",
     "splash": {
-      "image": "./assets/images/splash.png",
+      "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#040810"
     },
@@ -18,14 +18,14 @@
       [
         "expo-notifications",
         {
-          "icon": "./assets/images/logo.png",
+          "icon": "./assets/icon.png",
           "color": "#06B6D4"
         }
       ]
     ],
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/logo.png",
+        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#040810"
       },
       "package": "com.aquaai.app"
