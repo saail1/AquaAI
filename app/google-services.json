@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "245959027247",
+    "project_id": "aquaai-ef50d",
+    "storage_bucket": "aquaai-ef50d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:245959027247:android:0e6f6d3274c9792368b4da",
+        "android_client_info": {
+          "package_name": "com.aquaai.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxF6JCV75MSTi4qQYVrRAWnyxPSUpRd4A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
