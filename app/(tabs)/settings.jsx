@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Switch, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Switch, Alert, TextInput, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-
+import { useGoalStore } from '../../src/store/goalStore';
 import { ScreenWrapper } from '../../src/components/layout/ScreenWrapper';
 import { Header } from '../../src/components/layout/Header';
 import { Card } from '../../src/components/common/Card';
@@ -15,8 +15,21 @@ import { COLORS, FONTS, SPACING } from '../../src/constants/theme';
 
 export default function SettingsScreen() {
   const router = useRouter();
+  const [weightInput, setWeightInput] = useState(weight ? String(weight) : '');
+const [selectedActivity, setSelectedActivity] = useState(activityLevel || 'low');
+
+const handleSaveWeight = () => {
+  const w = parseFloat(weightInput);
+  if (!w || w < 20 || w > 300) {
+    Alert.alert('Invalid Weight', 'Please enter a valid weight between 20-300 kg');
+    return;
+  }
+  setWeightAndActivity(w, selectedActivity);
+  Alert.alert('✅ Goal Updated!', `Your new daily goal is set based on your weight.`);
+};
   const { user, logout } = useAuth();
-  const { goal, reminderEnabled, toggleReminder } = useGoal();
+  const { goal, reminderEnabled, toggleReminder, updateWeightGoal } = useGoal();
+const { weight, activityLevel, setWeightAndActivity } = useGoalStore();
 
   const handleLogout = async () => {
     Alert.alert(
@@ -68,7 +81,40 @@ export default function SettingsScreen() {
             <Text style={styles.profileEmail}>{user?.email}</Text>
           </View>
         </Card>
+<Text style={styles.sectionTitle}>Body & Activity</Text>
+<Card style={styles.settingsCard}>
+  <Text style={styles.rowTitle}>Your Weight (kg)</Text>
+  <TextInput
+    style={styles.weightInput}
+    value={weightInput}
+    onChangeText={setWeightInput}
+    keyboardType="numeric"
+    placeholder="e.g. 70"
+    placeholderTextColor={COLORS.textMuted}
+    maxLength={5}
+  />
 
+  <Text style={[styles.rowTitle, { marginTop: SPACING.md, marginBottom: SPACING.sm }]}>
+    Activity Level
+  </Text>
+  <View style={styles.activityRow}>
+    {['low', 'medium', 'high'].map((level) => (
+      <TouchableOpacity
+        key={level}
+        style={[styles.activityBtn, selectedActivity === level && styles.activityBtnActive]}
+        onPress={() => setSelectedActivity(level)}
+      >
+        <Text style={[styles.activityBtnText, selectedActivity === level && styles.activityBtnTextActive]}>
+          {level.charAt(0).toUpperCase() + level.slice(1)}
+        </Text>
+      </TouchableOpacity>
+    ))}
+  </View>
+
+  <TouchableOpacity style={styles.saveBtn} onPress={handleSaveWeight}>
+    <Text style={styles.saveBtnText}>Calculate & Save Goal</Text>
+  </TouchableOpacity>
+</Card>
         <Text style={styles.sectionTitle}>Goals & Reminders</Text>
         <Card style={styles.settingsCard} noPadding>
           <SettingRow 
@@ -194,4 +240,54 @@ const styles = StyleSheet.create({
   logoutBtn: {
     marginTop: SPACING.md,
   },
+  weightInput: {
+  backgroundColor: COLORS.bgSurface,
+  borderRadius: 10,
+  borderWidth: 1,
+  borderColor: COLORS.border,
+  color: COLORS.textPrimary,
+  fontFamily: FONTS.medium,
+  fontSize: 16,
+  paddingHorizontal: SPACING.md,
+  paddingVertical: SPACING.sm,
+  marginTop: SPACING.sm,
+},
+activityRow: {
+  flexDirection: 'row',
+  gap: SPACING.sm,
+},
+activityBtn: {
+  flex: 1,
+  paddingVertical: SPACING.sm,
+  borderRadius: 10,
+  borderWidth: 1,
+  borderColor: COLORS.border,
+  alignItems: 'center',
+  backgroundColor: COLORS.bgSurface,
+},
+activityBtnActive: {
+  backgroundColor: 'rgba(6, 182, 212, 0.15)',
+  borderColor: COLORS.accentCyan,
+},
+activityBtnText: {
+  fontFamily: FONTS.medium,
+  fontSize: 14,
+  color: COLORS.textMuted,
+},
+activityBtnTextActive: {
+  color: COLORS.accentCyan,
+  fontFamily: FONTS.bold,
+},
+saveBtn: {
+  marginTop: SPACING.lg,
+  backgroundColor: COLORS.accentCyan,
+  borderRadius: 10,
+  paddingVertical: SPACING.md,
+  alignItems: 'center',
+},
+saveBtnText: {
+  fontFamily: FONTS.bold,
+  fontSize: 15,
+  color: '#000',
+},
 });

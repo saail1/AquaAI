@@ -22,3 +22,19 @@ export const getInitials = (name) => {
   }
   return name.substring(0, 2).toUpperCase();
 };
+export const formatTime = (timestamp) => {
+  if (!timestamp) return '';
+  
+  let date;
+  if (timestamp?.seconds) {
+    // Firestore timestamp
+    date = new Date(timestamp.seconds * 1000);
+  } else {
+    date = new Date(timestamp);
+  }
+  
+  return date.toLocaleTimeString([], { 
+    hour: '2-digit', 
+    minute: '2-digit' 
+  });
+};

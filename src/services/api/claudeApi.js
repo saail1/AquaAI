@@ -1,32 +1,43 @@
 export const getHydrationInsight = async ({ logs, totalMl, goalMl, userName }) => {
-  // Simulate network request delay (1.5 seconds) to make the UI look authentic
-  await new Promise(resolve => setTimeout(resolve, 1500));
-
+  const apiKey = process.env.EXPO_PUBLIC_GEMINI_API_KEY;
   const name = userName || 'there';
-  const percent = goalMl > 0 ? (totalMl / goalMl) * 100 : 0;
-  
-  let observation = "";
-  let tip = "";
-  let encouragement = "";
+  const percent = goalMl > 0 ? Math.round((totalMl / goalMl) * 100) : 0;
 
-  // Generate dynamic-looking responses based on the user's actual progress
-  if (percent >= 100) {
-    observation = `Incredible job, ${name}. You've already hit your goal of ${goalMl}ml today!`;
-    tip = "For tomorrow, remember that consistency is key for optimal cellular hydration and maintaining energy levels.";
-    encouragement = "Amazing work staying disciplined today.";
-  } else if (percent > 50) {
-    observation = `You are over halfway to your goal with ${totalMl}ml logged.`;
-    tip = "Try drinking a full glass of water right before your next meal to easily close that gap and aid digestion.";
-    encouragement = "You are doing great, keep that momentum going!";
-  } else if (logs.length > 0) {
-    observation = `You've started your day with ${totalMl}ml so far.`;
-    tip = "Remember that sipping small amounts consistently throughout the day is much better than chugging a lot at once.";
-    encouragement = "Let's pick up the pace and reach that target!";
-  } else {
-    observation = `I notice you haven't logged any drinks yet today, ${name}.`;
-    tip = "Kickstart your metabolism and wake up your brain by having a large glass of water right now.";
-    encouragement = "It is never too late in the day to start hydrating!";
+  const prompt = `You are AquaAI, a friendly and motivating hydration coach.
+
+User: ${name}
+Today's water intake: ${totalMl}ml
+Daily goal: ${goalMl}ml  
+Progress: ${percent}%
+Number of drinks logged: ${logs.length}
+
+Give a short, personalized hydration insight in 2-3 sentences. Be encouraging, specific, and friendly. Do not use bullet points or headers.`;
+
+  try {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { maxOutputTokens: 150, temperature: 0.8 }
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (data?.candidates?.[0]?.content?.parts?.[0]?.text) {
+      return data.candidates[0].content.parts[0].text;
+    } else {
+      throw new Error('No response from Gemini');
+    }
+  } catch (err) {
+    // Fallback agar internet na ho
+    const percent2 = goalMl > 0 ? (totalMl / goalMl) * 100 : 0;
+    if (percent2 >= 100) return `Amazing ${name}! You've crushed your goal today!`;
+    if (percent2 > 50) return `Great work ${name}! You're over halfway there — keep sipping!`;
+    return `Hey ${name}, let's get hydrated! Try drinking a glass of water right now.`;
   }
-
-  return `${observation} ${tip} ${encouragement}`;
 };
