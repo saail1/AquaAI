@@ -168,6 +168,8 @@ const { weight, activityLevel, setWeightAndActivity } = useGoalStore();
           onPress={handleLogout} 
           style={styles.logoutBtn}
         />
+
+        <Text style={styles.buildText}>Built by Saail Abbas</Text>
       </ScrollView>
     </ScreenWrapper>
   );
@@ -289,5 +291,13 @@ saveBtnText: {
   fontFamily: FONTS.bold,
   fontSize: 15,
   color: '#000',
+},
+buildText: {
+  fontFamily: FONTS.medium,
+  fontSize: 12,
+  color: COLORS.textMuted,
+  textAlign: 'center',
+  marginTop: SPACING.md,
+  marginBottom: SPACING.sm,
 },
 });
